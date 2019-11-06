@@ -353,20 +353,29 @@ var letterTally = function(str, obj = {}) {
 // elements should not be changed.
 // Example: compress([1, 2, 2, 3, 4, 4, 5, 5, 5]) // [1, 2, 3, 4, 5]
 // Example: compress([1, 2, 2, 3, 4, 4, 2, 5, 5, 5, 4, 4]) // [1, 2, 3, 4, 2, 5, 4]
-var compress = function(list, array = []) {
-  // base case
-  if (!list.length) {
-    return array;
-  } 
-  if (!array.length) {
-    return (compress(list.slice(1), array.concat(list[0])));
-  } if (array[array.length - 1] === list[0]) {
-    return compress(list.slice(1), array);
-  } 
-  if (array[array.length - 1] !== list[0]) {
-    return (compress(list.slice(1), array.concat(list[0]))); 
+var compress = function(list) {
+  if (list.length > 1) {
+    if (list[0] === list[1]) {
+      return compress(list.slice(1));
+    }
+    return [list[0], ...compress(list.slice(1))];
   }
+  return list;
 };
+// var compress = function(list, array = []) {
+//   // base case
+//   if (!list.length) {
+//     return array;
+//   } 
+//   if (!array.length) {
+//     return (compress(list.slice(1), array.concat(list[0])));
+//   } if (array[array.length - 1] === list[0]) {
+//     return compress(list.slice(1), array);
+//   } 
+//   if (array[array.length - 1] !== list[0]) {
+//     return (compress(list.slice(1), array.concat(list[0]))); 
+//   }
+// };
 
 // 32. Augment every element in a list with a new value where each element is an array
 // itself.
@@ -378,13 +387,51 @@ var augmentElements = function(array, aug) {
 // minimizeZeroes([2,0,0,0,1,4]) // [2,0,1,4]
 // minimizeZeroes([2,0,0,0,1,0,0,4]) // [2,0,1,0,4]
 var minimizeZeroes = function(array) {
+  if (array.length > 1) {
+    if (array[0] === 0) {
+      return compress(array.slice(1));
+    }
+    return [array[0], ...minimizeZeroes(array.slice(1))];
+  }
+  return array;
 };
 
 // 34. Alternate the numbers in an array between positive and negative regardless of
 // their original sign.  The first number in the index always needs to be positive.
 // alternateSign([2,7,8,3,1,4]) // [2,-7,8,-3,1,-4]
 // alternateSign([-2,-7,8,3,-1,4]) // [2,-7,8,-3,1,-4]
-var alternateSign = function(array) {
+var alternateSign = function(array, array2 = []) {
+  if (!array.length) {
+    return array2;
+  } 
+  // if length of newArray is even, then the next number should be positive. 
+  if (array2.length % 2 === 0) {
+    // so if first element of <array> is positive, push that number to end of newArray
+    if (array[0] > 0) {
+      array2.push(array[0]);
+      return alternateSign(array.slice(1), array2);
+    }
+    // if first element of <array> is negative, multiply that by -1 and push it to newArray
+    if (array[0] < 0) {
+      array[0] *= -1;
+      array2.push(array[0]);
+      return alternateSign(array.slice(1), array2);
+    }
+  } 
+  // if length of newArray is odd, then the next number should be negative. 
+  if (array2.length % 2 === 1) {
+    // So if first element of <array> is negative, push that number to the end of newArray
+    if (array[0] < 0) {
+      array2.push(array[0]);
+      return alternateSign(array.slice(1), array2);
+    }
+    // if first element of <array> is positive, multiply it by -1 before pushing
+   if (array[0] > 0) {
+    array[0] *= -1;
+    array2.push(array[0]);
+    return alternateSign(array.slice(1), array2);
+   }
+  }
 };
 
 // 35. Given a string, return a string with digits converted to their word equivalent.
@@ -397,10 +444,27 @@ var numToText = function(str, str2 = "") {
     return str2;
   } 
   //check each call for if
-  if (str[0] === "0") {
+if (str[0] === "0") {
     return str2.concat("zero").concat(numToText(str.slice(1), str2));  
-  }
-  
+  } if (str[0] === "1") {
+    return str2.concat("one").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "2") {
+    return str2.concat("two").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "3") {
+    return str2.concat("three").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "4") {
+    return str2.concat("four").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "5") {
+    return str2.concat("five").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "6") {
+    return str2.concat("six").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "7") {
+    return str2.concat("seven").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "8") {
+    return str2.concat("eight").concat(numToText(str.slice(1), str2));  
+  } if (str[0] === "9") {
+    return str2.concat("nine").concat(numToText(str.slice(1), str2));  
+  } 
   // return this current string and conact ir back with recursive call of slice str1 and str2
   return str2.concat(str[0]).concat(numToText(str.slice(1), str2));  
 };
