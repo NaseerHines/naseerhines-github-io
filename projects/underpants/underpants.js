@@ -239,11 +239,11 @@ _.unique = function(array) {
 */
 _.filter = function(array, func) {
     var newArray = [];
-    _.each(array, function(e, i , a) {
-        if (func(e, i, a)) {
-           newArray.push(e); 
+    for (var i = 0; i < array.length; i++) {
+        if (func(array[i], i, array)) {
+            newArray.push(array[i]);
         }
-    });
+    }
     return newArray;    
 };
 
@@ -372,46 +372,15 @@ _.pluck = function(array, prop) {
 *   _.every([2,4,6], function(e){return e % 2 === 0}) -> true
 *   _.every([1,2,3], function(e){return e % 2 === 0}) -> false
 */
-_.every = function(collection, func) {
-    var flag = null;
-    if (func === undefined) {
-        if (Array.isArray(collection)) {
-        for (var i = 0; i < collection.length; i++) {
-            if (!collection[i]) {
-                flag = false;
-            } 
-        }
-    } 
-        else {
-            for (var key in collection) {
-                if (!collection[key]) {
-                flag = false;
-                }
-            }
-        }
-    } 
-    else {
-        if (Array.isArray(collection)) {
-            for (var i = 0; i < collection.length; i++) {
-                if (!func(collection[i], i, collection)) {
-                    flag = false;
-                }
-            }
-        } 
-        else {
-            for (var key in collection) {
-                if (!func(collection[key], key, collection)) {
-                    flag = false;
-                }
-            }
-        }
+_.every = function(collection, test){
+    let arr = [];
+    if(!test){
+        return _.contains(_.filter(collection, Boolean), true);
     }
-    if (flag === null) {
-        return true;
-    } 
-    else {
-        return false;
-    }    
+    _.each(collection, function(element,iteratee,collection){
+        arr.push(test(element,iteratee,collection));
+    });
+    return !_.contains(arr, false);
 };
 
 /** _.some
@@ -434,47 +403,55 @@ _.every = function(collection, func) {
 *   _.some([1,3,5], function(e){return e % 2 === 0}) -> false
 *   _.some([1,2,3], function(e){return e % 2 === 0}) -> true
 */
-_.some = function(collection, func) {
-    var flag = null;
-    if (func === undefined) {
-        if (Array.isArray(collection)) {
-            for (var i = 0; i < collection.length; i++) {
-                if (collection[i]) {
-                    flag = true;
-                } 
-            }
-        } 
-        else {
-            for (var key in collection) {
-                if (collection[key]) {
-                    flag = true;
-                }
-            }
-        }
-    } 
-    else {
-        if (Array.isArray(collection)) {
-            if (_.reject(collection, func).length === collection.length) {
-                return false;
-            } 
-            else {
-                return true;
-            }
-        } 
-        else {
-            for (var key in collection) {
-                if (collection[key]) {
-                    flag = true;
-                }
-            }
-        }   
+_.some = function(collection, test) {
+    // var flag = null;
+    // if (func === undefined) {
+    //     if (Array.isArray(collection)) {
+    //         for (var i = 0; i < collection.length; i++) {
+    //             if (collection[i]) {
+    //                 flag = true;
+    //             } 
+    //         }
+    //     } 
+    //     else {
+    //         for (var key in collection) {
+    //             if (collection[key]) {
+    //                 flag = true;
+    //             }
+    //         }
+    //     }
+    // } 
+    // else {
+    //     if (Array.isArray(collection)) {
+    //         if (_.reject(collection, func).length === collection.length) {
+    //             return false;
+    //         } 
+    //         else {
+    //             return true;
+    //         }
+    //     } 
+    //     else {
+    //         for (var key in collection) {
+    //             if (collection[key]) {
+    //                 flag = true;
+    //             }
+    //         }
+    //     }   
+    // }
+    // if (flag === true) {
+    //     return true;
+    // }
+    // else {
+    //     return false;
+    // }   
+    let arr = [];
+    if(!test){
+        return _.contains(_.filter(collection, Boolean), true);
     }
-    if (flag === true) {
-        return true;
-    }
-    else {
-        return false;
-    }    
+    _.each(collection, function(element,iteratee,collection){
+        arr.push(test(element,iteratee,collection));
+    });
+    return _.contains(arr, true);
 };
 
 /** _.reduce
@@ -495,7 +472,7 @@ _.some = function(collection, func) {
 * Examples:
 *   _.reduce([1,2,3], function(previousSum, currentValue, currentIndex){ return previousSum + currentValue }, 0) -> 6
 */
-_.reduce = function(array, func, seed) {
+_.reduce = function(array, func, seed){
     if (seed !== undefined) {
         let last = seed;
         for (var i = 0; i < array.length; i++) {
@@ -511,6 +488,7 @@ _.reduce = function(array, func, seed) {
     }
 };
 
+
 /** _.extend
 * Arguments:
 *   1) An Object
@@ -525,10 +503,7 @@ _.reduce = function(array, func, seed) {
 *   _.extend(data, {b:"two"}); -> data now equals {a:"one",b:"two"}
 *   _.extend(data, {a:"two"}); -> data now equals {a:"two"}
 */
-_.extend = function(object1, object2, ...args) {
-    for (var key in object2) {
-        object1[key] = object2[key];
-    }
+_.extend = function(object1, ...args) {
     for (var i = 0; i < args.length; i++) {
         for (var key in args[i]) {
             object1[key] = args[i][key];
